@@ -12,11 +12,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // Registramos el alias del middleware de moderación
-        $middleware->alias([
-            'moderator' => \App\Http\Middleware\IsModerator::class,
-        ]);
-    })
+    // Registramos el alias del middleware de moderación
+    $middleware->alias([
+        'moderator' => \App\Http\Middleware\IsModerator::class,
+        'admin' => \App\Http\Middleware\IsAdmin::class,
+    ]);
+})
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),

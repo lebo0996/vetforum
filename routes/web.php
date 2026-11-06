@@ -117,7 +117,7 @@ Route::middleware('auth')->group(function () {
     // -----------------------------------------------------
     // Panel de Administración (Solo Admins)
     // -----------------------------------------------------
-    Route::prefix('admin')->name('admin.')->group(function () {
+    Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/', [AdminController::class, 'index'])->name('index');
         Route::post('/settings', [AdminController::class, 'updateSettings'])->name('settings.update');
         
