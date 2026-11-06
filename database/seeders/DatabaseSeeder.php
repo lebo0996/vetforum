@@ -3,10 +3,8 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\User;
 use App\Models\Setting;
 use App\Models\Category;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
@@ -15,22 +13,13 @@ class DatabaseSeeder extends Seeder
     {
         // 1. Crear Configuración Base
         Setting::create([
-            'site_name' => 'Foro Veterinario Pro',
+            'site_name' => 'Veterinaria Ideal',
             'site_description' => 'Comparte conocimientos, discute casos clínicos y conecta con otros profesionales veterinarios en un espacio colaborativo.',
             'contact_email' => 'contacto@vetforum.com',
             'allow_registrations' => true,
         ]);
 
-        // 2. Crear tu Usuario Admin
-        User::create([
-            'name' => 'Dr. Luis Enrique',
-            'email' => 'admin@vetforum.com',
-            'password' => Hash::make('12345678'),
-            'role' => 'admin',
-            'specialty' => 'Bovinos y Ganadería',
-        ]);
-
-        // 3. Crear Categorías Iniciales
+        // 2. Crear Categorías Iniciales
         $categories = [
             ['name' => 'Bovinos y Ganadería', 'desc' => 'Manejo de hato, reproducción, sanidad y producción pecuaria.', 'color' => '#10b981'],
             ['name' => 'Pequeñas Especies', 'desc' => 'Clínica, cirugía y medicina interna en perros y gatos.', 'color' => '#3b82f6'],
