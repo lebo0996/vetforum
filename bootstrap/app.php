@@ -14,9 +14,10 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
     // Registramos el alias del middleware de moderación
     $middleware->alias([
-        'moderator' => \App\Http\Middleware\IsModerator::class,
-        'admin' => \App\Http\Middleware\IsAdmin::class,
-    ]);
+    'moderator' => \App\Http\Middleware\IsModerator::class,
+    'admin' => \App\Http\Middleware\IsAdmin::class,
+    'check.status' => \App\Http\Middleware\CheckUserStatus::class,
+]);
 })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

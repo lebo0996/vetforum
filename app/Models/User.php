@@ -21,10 +21,26 @@ use Illuminate\Notifications\Notifiable;
     'role',
     'is_verified',
     'is_active', 
-    'suspended_until'
+    'suspended_until',
+    // --- NUEVOS CAMPOS PROFESIONALES ---
+    'professional_status',
+    'cedula',
+    'specialty_secondary',
+    'clinic_name',
+    'bio',
+    'offers_emergencies',
+    'home_visits',
+    'city',
+    'state',
+    'country',
+    'whatsapp',
+    'website',
+    'facebook',
+    'instagram',
+    'linkedin'
 ])]
 #[Hidden(['password', 'remember_token'])]
-class User extends Authenticatable implements MustVerifyEmail // <-- 2. Añade "implements MustVerifyEmail"
+class User extends Authenticatable implements MustVerifyEmail 
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
@@ -41,6 +57,9 @@ class User extends Authenticatable implements MustVerifyEmail // <-- 2. Añade "
             'password' => 'hashed',
             'is_active' => 'boolean',
             'suspended_until' => 'datetime',
+            // Agregamos el casteo para los checkboxes booleanos
+            'offers_emergencies' => 'boolean',
+            'home_visits' => 'boolean',
         ];
     }
     

@@ -220,6 +220,14 @@
             </div>
         </div>
     @endif
+    @if(session('error'))
+    <div class="container mx-auto px-4 mt-4 max-w-7xl">
+        <div class="bg-rose-50 border border-rose-200 text-rose-700 px-4 py-3 rounded-lg text-sm flex items-center gap-2 shadow-sm">
+            <i data-lucide="octagon-alert" class="w-4 h-4 text-rose-600 shrink-0"></i>
+            <span>{{ session('error') }}</span>
+        </div>
+    </div>
+@endif
 
     <main class="flex-1">
         @yield('content')

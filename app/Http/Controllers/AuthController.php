@@ -18,19 +18,37 @@ class AuthController extends Controller
     public function showLogin() { return view('auth.login'); }
 
     public function login(Request $request)
-    {
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+{
+    $credentials = $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+    ]);
 
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
-            return redirect()->intended(route('forum.index'))->with('success', 'Bienvenido de nuevo.');
+    if (Auth::attempt($credentials)) {
+        $user = Auth::user();
+
+        // Cuenta desactivada permanentemente
+        if (!$user->is_active) {
+            Auth::logout();
+            return redirect()->route('login')->with('error', 'Tu cuenta ha sido desactivada permanentemente por infringir las normas de la comunidad.');
         }
 
-        return back()->withErrors(['email' => 'Las credenciales no coinciden.'])->onlyInput('email');
+        // Suspensión temporal
+        if ($user->suspended_until && now()->lessThan($user->suspended_until)) {
+            $fecha = $user->suspended_until->format('d/m/Y h:i A');
+            $dias = (int) ceil(now()->diffInHours($user->suspended_until) / 24);
+            $tiempo = $dias > 1 ? "Te quedan {$dias} días de suspensión" : "Te queda 1 día de suspensión";
+            Auth::logout();
+            return redirect()->route('login')->with('error', "Tu cuenta está suspendida temporalmente. {$tiempo}, hasta el {$fecha}.");
+        }
+
+        $request->session()->regenerate();
+        return redirect()->intended(route('forum.index'))->with('success', 'Bienvenido de nuevo.');
     }
+
+    return back()->withErrors(['email' => 'Las credenciales no coinciden.'])->onlyInput('email');
+}
+
 
     public function showRegister() { return view('auth.register'); }
 

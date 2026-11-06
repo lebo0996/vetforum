@@ -3,6 +3,39 @@
         <h2 class="text-xl font-bold text-slate-800">Gestión de Usuarios</h2>
         <p class="text-sm text-slate-500">Administra los roles, verifica cuentas, asigna insignias especiales y modera el acceso a la plataforma.</p>
     </div>
+<div class="mb-4" x-data="{ showCreate: {{ $errors->any() ? 'true' : 'false' }} }">
+    <button type="button" @click="showCreate = !showCreate" class="px-4 py-2 bg-emerald-600 text-white text-sm font-bold rounded-lg hover:bg-emerald-700 transition">
+        + Nuevo usuario
+    </button>
+    @if($errors->any())
+    <div class="mt-4 p-3 bg-rose-50 border border-rose-200 rounded-lg text-sm text-rose-700">
+        @foreach($errors->all() as $error)
+            <p>{{ $error }}</p>
+        @endforeach
+    </div>
+@endif
+
+    <form x-show="showCreate" style="display: none;" action="{{ route('admin.users.store') }}" method="POST" class="mt-4 p-4 bg-slate-50 rounded-xl border border-slate-200 grid grid-cols-1 sm:grid-cols-2 gap-3">
+        @csrf
+        <input type="text" name="name" placeholder="Nombre completo" required class="px-3 py-2 border border-slate-300 rounded-lg text-sm">
+        <input type="text" name="username" placeholder="Usuario (sin espacios)" required class="px-3 py-2 border border-slate-300 rounded-lg text-sm">
+        <input type="email" name="email" placeholder="Correo electrónico" required class="px-3 py-2 border border-slate-300 rounded-lg text-sm">
+        <input type="text" name="specialty" placeholder="Especialidad" class="px-3 py-2 border border-slate-300 rounded-lg text-sm">
+        <select name="role" class="px-3 py-2 border border-slate-300 rounded-lg text-sm">
+            <option value="user">Usuario</option>
+            <option value="moderator">Moderador</option>
+            <option value="admin">Administrador</option>
+        </select>
+        <input type="password" name="password" placeholder="Contraseña (mínimo 8 caracteres)" required class="px-3 py-2 border border-slate-300 rounded-lg text-sm">
+        <input type="password" name="password_confirmation" placeholder="Confirmar contraseña" required class="px-3 py-2 border border-slate-300 rounded-lg text-sm">
+        <label class="flex items-center gap-2 text-sm text-slate-600 sm:col-span-2">
+            <input type="checkbox" name="verify_email" checked> Confirmar correo al crearlo
+        </label>
+        <button type="submit" class="px-4 py-2 bg-emerald-600 text-white text-sm font-bold rounded-lg hover:bg-emerald-700 transition sm:col-span-2">
+            Crear usuario
+        </button>
+    </form>
+</div>
 
     <div class="overflow-x-auto">
         <table class="w-full text-left text-sm text-slate-600 border-collapse">
@@ -71,7 +104,13 @@
                                         <i data-lucide="{{ $user->is_verified ? 'shield-minus' : 'shield-check' }}" class="w-4 h-4"></i>
                                     </button>
                                 </form>
-
+                                <!-- Botón Confirmar Correo -->
+<form action="{{ route('admin.users.verifyEmail', $user) }}" method="POST">
+    @csrf
+    <button type="submit" class="p-2 rounded-lg transition {{ $user->hasVerifiedEmail() ? 'text-emerald-500 hover:bg-emerald-50' : 'text-slate-400 hover:text-emerald-500 hover:bg-emerald-50' }}" title="{{ $user->hasVerifiedEmail() ? 'Quitar confirmación de correo' : 'Confirmar correo' }}">
+        <i data-lucide="{{ $user->hasVerifiedEmail() ? 'mail-check' : 'mail' }}" class="w-4 h-4"></i>
+    </button>
+</form>
                                 <!-- Botón para abrir Modal de Edición (Roles e Insignias) -->
                                 <button type="button" @click="showModal = true" class="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition" title="Editar Rol e Insignias">
                                     <i data-lucide="settings-2" class="w-4 h-4"></i>

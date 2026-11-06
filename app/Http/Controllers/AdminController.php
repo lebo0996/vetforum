@@ -14,6 +14,8 @@ use App\Models\Badge;
 use App\Models\Specialty;
 use App\Models\Report; // <-- Importación del modelo de reportes agregada
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Hash;
+
 
 class AdminController extends Controller
 {
@@ -131,6 +133,46 @@ class AdminController extends Controller
         $statusText = $user->is_verified ? 'verificado' : 'desverificado';
         return back()->with('success', "El usuario {$user->name} ahora está {$statusText}.");
     }
+    public function storeUser(Request $request)
+{
+    $data = $request->validate([
+        'name' => 'required|string|max:255',
+        'username' => 'required|string|max:30|unique:users,username|regex:/^[a-zA-Z0-9_.]+$/',
+        'email' => 'required|email|unique:users,email',
+        'specialty' => 'nullable|string|max:100',
+        'role' => 'required|in:user,moderator,admin',
+        'password' => 'required|min:8|confirmed',
+    ]);
+
+    $user = User::create([
+        'name' => $data['name'],
+        'username' => strtolower($data['username']),
+        'email' => $data['email'],
+        'specialty' => $data['specialty'] ?? 'Médico Veterinario',
+        'role' => $data['role'],
+        'password' => Hash::make($data['password']),
+    ]);
+
+    if ($request->has('verify_email')) {
+        $user->markEmailAsVerified();
+    }
+
+    return back()->with('success', "Usuario {$user->name} creado correctamente.");
+}
+
+    public function verifyEmail(\App\Models\User $user)
+    {
+    if ($user->hasVerifiedEmail()) {
+        $user->email_verified_at = null;
+        $message = "Correo de {$user->name} marcado como no verificado.";
+    } else {
+        $user->markEmailAsVerified();
+        $message = "Correo de {$user->name} confirmado por el administrador.";
+    }
+    $user->save();
+
+    return back()->with('success', $message);
+}
 
     public function storeBadge(Request $request)
     {
@@ -238,7 +280,7 @@ class AdminController extends Controller
         $request->validate(['days' => 'required|integer|min:1']);
         
         $user->update([
-            'suspended_until' => now()->addDays($request->days)
+            'suspended_until' => now()->addDays((int) $request->days)
         ]);
 
         return back()->with('success', "El usuario {$user->name} ha sido suspendido por {$request->days} días.");

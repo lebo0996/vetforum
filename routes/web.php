@@ -36,7 +36,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middl
 // -----------------------------------------------------
 // Rutas Protegidas (Solo Usuarios Autenticados)
 // -----------------------------------------------------
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'check.status'])->group(function () {
     
     // Muro Social (Privado, solo accesible con sesión iniciada)
     Route::get('/muro', [StatusController::class, 'index'])->name('statuses.index');
@@ -133,6 +133,7 @@ Route::middleware('auth')->group(function () {
         // Gestión de Usuarios
         Route::post('/users/{user}/role', [AdminController::class, 'updateRole'])->name('users.role');
         Route::post('/users/{user}/verify', [AdminController::class, 'toggleVerify'])->name('users.verify');
+        Route::post('/users/{user}/verify-email', [AdminController::class, 'verifyEmail'])->name('users.verifyEmail');
         
         // Insignias (Badges)
         Route::post('/badges', [AdminController::class, 'storeBadge'])->name('badges.store');
@@ -152,6 +153,8 @@ Route::middleware('auth')->group(function () {
         // Sanciones de Usuarios
         Route::post('/usuarios/{user}/suspender', [AdminController::class, 'suspendUser'])->name('users.suspend');
         Route::patch('/usuarios/{user}/banear', [AdminController::class, 'toggleBanUser'])->name('users.ban');
+        Route::post('/users', [AdminController::class, 'storeUser'])->name('users.store');
+
     });
 
 }); // <-- Aquí se cierra correctamente el grupo Route::middleware('auth')
